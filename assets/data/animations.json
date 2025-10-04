@@ -43,6 +43,25 @@
     "assetKey": "fighter_destroy"
   },
   {
+    "key": "aircraft_career_destroy",
+    "frameRate": 8,
+    "repeat": 0,
+    "assetKey": "aircraft_career_destroy"
+  },
+  {
+    "key": "universal_destroy",
+    "frameRate": 12,
+    "repeat": 0,
+    "assetKey": "universal_destroy"
+  },
+
+  {
+    "key": "destroyer_destroy",
+    "frameRate": 6,
+    "repeat": 0,
+    "assetKey": "destroyer_destroy"
+  },
+  {
     "key": "bg1",
     "frameRate": 8,
     "repeat": -1,

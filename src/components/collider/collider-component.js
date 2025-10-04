@@ -1,10 +1,13 @@
+import { CUSTOM_EVENTS } from "../events/event-bus-component.js";
 
 
 export class ColliderComponent {
     #healthComponent;
+    #eventBusComponent;
 
-    constructor(healthComponent) {
+    constructor(healthComponent, eventBusComponent) {
         this.#healthComponent = healthComponent;
+        this.#eventBusComponent = eventBusComponent;
     }
 
     collideWithEnemyShip(){
@@ -17,6 +20,8 @@ export class ColliderComponent {
     collideWithEnemyProjectile(){
         if(this.#healthComponent.isDead) return;
         this.#healthComponent.hit();
+        if(this.#eventBusComponent)
+        this.#eventBusComponent.emit(CUSTOM_EVENTS.SHIP_HIT);
     }
 
 }

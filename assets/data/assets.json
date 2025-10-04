@@ -14,6 +14,26 @@
       },
       {
         "type": "image",
+        "key": "bomber",
+        "url": "bomber.png"
+      },
+      {
+        "type": "image",
+        "key": "cannon",
+        "url": "cannon.png"
+      },
+      {
+        "type": "image",
+        "key": "aircraft_career",
+        "url": "aircraft_career.png"
+      },
+      {
+        "type": "image",
+        "key": "destroyer",
+        "url": "destroyer.png"
+      },
+      {
+        "type": "image",
         "key": "ship_engine",
         "url": "ship_engine.png"
       },
@@ -43,6 +63,18 @@
       },
       {
         "type": "spritesheet",
+        "key": "universal_destroy",
+        "url": "universal_destroy.png",
+        "frameConfig": { "frameWidth": 64, "frameHeight": 64 }
+      },
+      {
+        "type": "spritesheet",
+        "key": "aircraft_career_destroy",
+        "url": "aircraft_career_destroy.png",
+        "frameConfig": { "frameWidth": 122, "frameHeight": 389 }
+      },
+      {
+        "type": "spritesheet",
         "key": "ship_engine_thruster",
         "url": "ship_engine_thruster.png",
         "frameConfig": { "frameWidth": 48, "frameHeight": 48 }
@@ -52,6 +84,12 @@
         "key": "fighter_destroy",
         "url": "fighter_destroy.png",
         "frameConfig": { "frameWidth": 64, "frameHeight": 64 }
+      },
+      {
+        "type": "spritesheet",
+        "key": "destroyer_destroy",
+        "url": "destroyer_destroy.png",
+        "frameConfig": { "frameWidth": 184, "frameHeight": 337 }
       },
       {
         "type": "spritesheet",

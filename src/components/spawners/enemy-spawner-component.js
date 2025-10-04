@@ -1,3 +1,4 @@
+import { CUSTOM_EVENTS } from "../events/event-bus-component.js";
 
 
 
@@ -6,7 +7,9 @@ export class EnemySpawnerComponent {
     #spawnInterval;
     #spawnAt;
     #group;
-
+    spawnConfig;
+    enemyClass;
+    #disableSpawning;
 
   constructor(scene, enemyClass, spawnConfig, eventBusComponent) {
     this.#scene = scene;
@@ -18,8 +21,11 @@ export class EnemySpawnerComponent {
           enemy.init(eventBusComponent);
         }
     });
+    this.spawnConfig = spawnConfig;
+    this.enemyClass = enemyClass;
     this.#spawnInterval = spawnConfig.interval;
     this.#spawnAt = spawnConfig.spawnt;
+    this.#disableSpawning = false;
 
     this.#scene.events.on(Phaser.Scenes.Events.UPDATE, this.update, this);
     this.#scene.physics.world.on(Phaser.Physics.Arcade.Events.WORLD_STEP, this.worldStep, this);
@@ -29,19 +35,27 @@ export class EnemySpawnerComponent {
             this.#scene.physics.world.off(Phaser.Physics.Arcade.Events.WORLD_STEP, this.worldStep, this);
     }, this);
 
-  };
+    eventBusComponent.on(CUSTOM_EVENTS.GAME_OVER, () => {
+        this.#disableSpawning = true;
+    });
+  }
 
   get phaserGroup() {
     return this.#group;
   }
 
     update(ts, dt ) {
+        if(this.#disableSpawning) {
+            return;
+        }
         this.#spawnAt -= dt;
         if(this.#spawnAt > 0) {
             return;
         }
         
         const x = Phaser.Math.RND.between(30, this.#scene.scale.width - 30);
+        // const y = this.scene.scale.height - height of unit
+        // this.spawnConfig.ENEMY_AIRCRAFT_CAREER_BULLET_INTERVAL;
 
         const enemy = this.#group.get(x, -20);
         enemy.reset();
@@ -53,7 +67,7 @@ export class EnemySpawnerComponent {
           if(!enemy.active) {
             return;
           }
-          if(enemy.y > this.#scene.scale.height + 50) {
+          if(enemy.y > this.#scene.scale.height + 400) {
             enemy.setActive(false);
             enemy.setVisible(false);
           }

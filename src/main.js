@@ -4,15 +4,16 @@ import { PreloadScene } from './scenes/preload-scene.js';
 import { BootScene } from './scenes/boot-scene.js';
 
 const game = new Phaser.Game({
-  type: Phaser.CANVAS,
+  type: Phaser.AUTO, //or Phaser.WEBGL, AUTO detects if the browser supports WebGL and uses it if available
+  // type: Phaser.CANVAS,
   roundPixels: true,
-  pixelArt: true,
+  // pixelArt: true,
   scale: {
     parent: 'game-container',
     width: 800,
     height: 640,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
+    mode: Phaser.Scale.FIT,
   },
   backgroundColor: '#000000',
   physics: {

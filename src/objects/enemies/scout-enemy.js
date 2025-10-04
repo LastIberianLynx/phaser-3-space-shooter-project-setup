@@ -29,8 +29,11 @@ export class ScoutEnemy extends Phaser.GameObjects.Container {
         this.scene.physics.add.existing(this); //add physics body to this container
         this.body.setSize(32, 32);
         this.body.setOffset(-16, -16);
+        this.setDepth(3);
+
 
         this.#shipSprite = scene.add.sprite(0, 0, 'scout', 0).setFlipY(true);
+
         this.#shipEngineSprite = scene.add.sprite(0, -18, 'scout_engine').setFlipY(true);
         this.#shipEngineSprite.play('scout_engine');
 
@@ -75,7 +78,7 @@ export class ScoutEnemy extends Phaser.GameObjects.Container {
             );
             
             this.#healthComponent = new HealthComponent(CONFIG.ENEMY_SCOUT_HEALTH);
-            this.#colliderComponent = new ColliderComponent(this.#healthComponent);
+            this.#colliderComponent = new ColliderComponent(this.#healthComponent, this.#eventBusComponent);
             this.#eventBusComponent.emit(CUSTOM_EVENTS.ENEMY_INIT, this);
             this.#isInitialized = true;
             

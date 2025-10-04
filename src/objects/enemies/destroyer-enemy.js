@@ -6,38 +6,44 @@ import { HealthComponent } from '../../components/health/health-component.js';
 import { ColliderComponent } from '../../components/collider/collider-component.js';
 import * as CONFIG from '../../config.js';
 import { CUSTOM_EVENTS } from "../../components/events/event-bus-component.js";
+import { GunComponent } from "../../components/weapons/gun-component.js";
 
 
-export class FighterEnemy extends Phaser.GameObjects.Container {
+export class DestroyerEnemy extends Phaser.GameObjects.Container {
     #isInitialized;
     #inputComponent;
-    #weaponComponent;
     #verticalInputComponent;
-
+    
     #healthComponent;
     #colliderComponent;
     #shipSprite;
     #shipEngineSprite;
-
+    
     #eventBusComponent;
+    
+    #weaponComponent;
+    #gunComponent;
+    #player;
 
     constructor(scene, x, y) {
-        super(scene,x, y, []);
+        super(scene,x, y-400, []);
 
         this.#isInitialized = false;
         this.scene.add.existing(this); //add this, player, to the scene;
         this.scene.physics.add.existing(this); //add physics body to this container
-        this.body.setSize(32, 32);
-        this.body.setOffset(-16, -16);
+        this.body.setSize(50, 200);
+        this.body.setOffset(-25, -100);
         this.setDepth(3);
 
 
-        this.#shipSprite = scene.add.sprite(0, 0, 'fighter', 0).setFlipY(true);
-        this.#shipEngineSprite = scene.add.sprite(0, -18, 'fighter_engine').setFlipY(true);
+        this.#shipSprite = scene.add.sprite(0, 0, 'destroyer', 0).setFlipY(false);
+        this.#shipEngineSprite = scene.add.sprite(0, -18, 'fighter_engine').setFlipY(false);
         this.#shipEngineSprite.play('fighter_engine');
-
+        this.#player = scene.player;
+        
         // this.#shipSprite.angle = 180;
         this.add([ this.#shipEngineSprite,  this.#shipSprite ]);
+        this.#gunComponent = new GunComponent(this, 'cannon', {x: 0, y: 0}, 0.4);
 
         this.scene.events.on(Phaser.Scenes.Events.UPDATE, this.update, this);
         this.once(Phaser.GameObjects.Events.DESTROY, () => {
@@ -63,29 +69,29 @@ export class FighterEnemy extends Phaser.GameObjects.Container {
     }
 
     get shipAssetKey() {
-        return 'fighter';
+        return 'destroyer';
     }
     get shipDestroyedAnimationKey() {
-        return 'fighter_destroy';
+        return 'destroyer_destroy';
     }
 
     init(eventBusComponent) {
         this.#eventBusComponent = eventBusComponent;
         this.#inputComponent = new BotFighterInputComponent();
-        this.#verticalInputComponent = new VerticalMovementComponent(this, this.#inputComponent, CONFIG.ENEMY_FIGHTER_MOVEMENT_VERTICAL_VELOCITY);
-        this.#weaponComponent = new WeaponComponent(this, this.#inputComponent, {
-            speed: CONFIG.ENEMY_FIGHTER_BULLET_SPEED,
-            interval: CONFIG.ENEMY_FIGHTER_BULLET_INTERVAL,
-            lifespan: CONFIG.ENEMY_FIGHTER_BULLET_LIFESPAN,
-            maxCount: CONFIG.ENEMY_FIGHTER_BULLET_MAX_COUNT,
+        this.#verticalInputComponent = new VerticalMovementComponent(this, this.#inputComponent, CONFIG.ENEMY_DESTROYER_MOVEMENT_VERTICAL_VELOCITY);
+        this.#weaponComponent = new WeaponComponent(this, { get shootIsDown() { return true; } }, {
+            speed: CONFIG.ENEMY_DESTROYER_BULLET_SPEED,
+            interval: CONFIG.ENEMY_DESTROYER_BULLET_INTERVAL,
+            lifespan: CONFIG.ENEMY_DESTROYER_BULLET_LIFESPAN,
+            maxCount: CONFIG.ENEMY_DESTROYER_BULLET_MAX_COUNT,
             yOffset: 10,
             flipY: true,
             },
             this.#eventBusComponent
         );
 
-        
-        this.#healthComponent = new HealthComponent(CONFIG.ENEMY_FIGHTER_HEALTH);
+
+        this.#healthComponent = new HealthComponent(CONFIG.ENEMY_DESTROYER_HEALTH);
         this.#colliderComponent = new ColliderComponent(this.#healthComponent, this.#eventBusComponent);
         this.#eventBusComponent.emit(CUSTOM_EVENTS.ENEMY_INIT, this);
         this.#isInitialized = true;
@@ -97,6 +103,7 @@ export class FighterEnemy extends Phaser.GameObjects.Container {
             this.setVisible(true);
             this.#healthComponent.reset();
             this.#verticalInputComponent.reset();
+            this.y =- 400;
     }
 
     update(ts, dt ) {
@@ -113,7 +120,19 @@ export class FighterEnemy extends Phaser.GameObjects.Container {
         }
         this.#inputComponent.update();
         this.#verticalInputComponent.update();
-        this.#weaponComponent.update(dt);
+
+        let direction = { x: 0, y: 1 }; // default down
+        if (this.#player && this.#player.x !== undefined && this.#player.y !== undefined) {
+            const dx = this.x - this.#player.x;
+            const dy = this.y - this.#player.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            if (length > 0) {
+                direction = { x: dx / length, y: dy / length };
+            }
+        }
+
+        this.#weaponComponent.update(dt, direction);
+        this.#gunComponent.rotateTowards(this.#player);
     
     }
 }
